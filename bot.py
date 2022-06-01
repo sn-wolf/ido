@@ -13,9 +13,10 @@ class MyClient(discord.Client):
         self.api_endpoint = f"{API_URL}/{version_id}"
         self.requests_headers = {"Authorization": os.environ["VF_API_KEY"]}
 
-    def interact(self, user_id, request):
+    def interact(self, session_id, request):
+        # Dialog manager POST request
         res = requests.post(
-            f"{self.api_endpoint}/user/{user_id}/interact",
+            f"{self.api_endpoint}/user/{session_id}/interact",
             json={"request": request},
             headers=self.requests_headers,
         )
@@ -28,21 +29,26 @@ class MyClient(discord.Client):
         print(self.user.name)
         print(self.user.id)
         print("------")
-        # Send a request to the model without caring about the response
-        # Just so that the model wakes up and starts loading
-        # self.query({"inputs": {"text": "Hello!"}})
-        # ^^ IDK if I want/need this for VF ^^
+
+    async def on_group_join(self, channel, user):
+        """
+        Called when bot is added to a private channel.
+        """
+        if user.id == self.user.id:
+            # Send a request to the bot to wake it up
+            self.interact(session_id=channel.id, request={"type": "launch"})
 
     async def on_message(self, message):
         """
         Called whenever the bot sees a message in a channel
         """
         # Ignore message if comes from the bot itself
-        if message.author.id == self.user.id:
+        # or from channels the bot isn't in
+        if message.author.id == self.user.id or self.user in message.recipients:
             return
 
-        # Get user id for interact call
-        user_id = message.author.username
+        # Get session id for interact call
+        session_id = message.channel.id
 
         # Form interact payload with the content of the message
         request = {"type": "text", "payload": message.content}
@@ -50,7 +56,7 @@ class MyClient(discord.Client):
         # While the bot is waiting on a response from VF
         # set its status as typing for user-friendliness
         async with message.channel.typing():
-            res = self.interact(user_id=user_id, request=request)
+            res = self.interact(session_id=session_id, request=request)
             for trace in res.json():
                 if trace["type"] == "speak" or trace["type"] == "text":
                     bot_response = trace["payload"]["message"]
