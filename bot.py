@@ -5,7 +5,7 @@ import requests
 import discord  # type: ignore
 
 API_URL = "https://general-runtime.voiceflow.com/state"
-
+VF_VERSION_ID = "6238e915145eb8f3f4f77b01"
 
 class MyClient(discord.Client):
     def __init__(self, version_id):
@@ -77,7 +77,7 @@ class MyClient(discord.Client):
 
 def main():
 
-    client = MyClient()
+    client = MyClient(version_id=VF_VERSION_ID)
     client.run(os.environ["DISCORD_TOKEN"])
 
 
