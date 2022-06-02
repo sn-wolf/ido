@@ -7,6 +7,7 @@ import discord  # type: ignore
 API_URL = "https://general-runtime.voiceflow.com/state"
 VF_VERSION_ID = "6238e915145eb8f3f4f77b01"
 
+
 class MyClient(discord.Client):
     def __init__(self, version_id):
         super().__init__()
@@ -43,8 +44,7 @@ class MyClient(discord.Client):
         Called whenever the bot sees a message in a channel
         """
         # Ignore message if comes from the bot itself
-        # or from channels the bot isn't in
-        if message.author.id == self.user.id or self.user in message.recipients:
+        if message.author.id == self.user.id:
             return
 
         # Get session id for interact call
