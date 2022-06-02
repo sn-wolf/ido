@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_URL = "https://general-runtime.voiceflow.com/state"
-VF_VERSION_ID = "6238e915145eb8f3f4f77b01"
 
 
 class MyClient(discord.Client):
@@ -80,7 +79,7 @@ class MyClient(discord.Client):
 
 def main():
 
-    client = MyClient(version_id=VF_VERSION_ID)
+    client = MyClient(version_id=os.environ['VERSION_ID'])
     client.run(os.environ["DISCORD_TOKEN"])
 
 
