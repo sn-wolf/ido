@@ -3,6 +3,9 @@
 import os
 import requests
 import discord  # type: ignore
+from dotenv import load_dotenv
+
+load_dotenv()
 
 API_URL = "https://general-runtime.voiceflow.com/state"
 VF_VERSION_ID = "6238e915145eb8f3f4f77b01"
